@@ -163,22 +163,26 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = event.pos
                 if 300 <= y <= 350:
-                    if x < WIDTH//3: 
-                        solution = bfs(start_state, GOAL_STATE)
-                        run_solution(screen, font, solution)
-                    elif x < 2*WIDTH//3: 
-                        solution = astar(start_state)
-                        run_solution(screen, font, solution)
-                    elif x < 2*WIDTH//3:
-                        solution = dfs(start_state, GOAL_STATE)
-                        run_solution(screen, font, solution)
-                    else:  # Reset
-                        current_state = start_state
-                        solution = []
-                        draw_state(screen, font, current_state)
-                        draw_buttons(screen, font)
-    pygame.quit()
-    sys.exit()
+                    button_width = WIDTH // 4
+                if x < button_width:              # BFS
+                    solution = bfs(start_state, GOAL_STATE)
+                    run_solution(screen, font, solution)
+
+                elif x < 2*button_width:          # DFS
+                    solution = dfs(start_state, GOAL_STATE)
+                    run_solution(screen, font, solution)
+
+                elif x < 3*button_width:          # A*
+                    solution = astar(start_state)
+                    run_solution(screen, font, solution)
+
+                else:                             # Reset
+                    current_state = start_state
+                    solution = []
+                    draw_state(screen, font, current_state)
+                    draw_buttons(screen, font)
+                    pygame.quit()
+                    sys.exit()
 
 if __name__=="__main__":
     main()

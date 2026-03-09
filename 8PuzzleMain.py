@@ -32,24 +32,37 @@ def bfs(start, goal):
                     queue.put((new_state, path + [new_state]))
     return None
 
-def dfs(start, goal):
-    stack = [(start, [start])]   
-    visited = {tuple(np.array(start).reshape(-1))}
+def dfs(start, goal, max_depth=50):
+    stack = [(start, [start], 0)]   
+    visited = set()
+
     while stack:
-        state, path = stack.pop()
+        state, path, depth = stack.pop()
+
         if state == goal:
             return path
+
+        if depth >= max_depth:
+            continue
+
+        flat = tuple(np.array(state).reshape(-1))
+        if flat in visited:
+            continue
+        visited.add(flat)
+
         x, y = [(i, j) for i in range(3) for j in range(3) if state[i][j] == 0][0]
+
         moves = [(-1,0),(1,0),(0,-1),(0,1)]
+
         for dx, dy in moves:
             nx, ny = x + dx, y + dy
+
             if 0 <= nx < 3 and 0 <= ny < 3:
                 new_state = [row[:] for row in state]
                 new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
-                flat = tuple(np.array(new_state).reshape(-1))
-                if flat not in visited:
-                    visited.add(flat)
-                    stack.append((new_state, path + [state]))
+
+                stack.append((new_state, path + [new_state], depth + 1))
+
     return None
 
 def manhattan(state):

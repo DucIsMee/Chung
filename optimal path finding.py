@@ -25,6 +25,30 @@ def bfs(graph, start, goal):
 
     return None  # Không tìm thấy
 
+# ==================== DFS SEARCH ====================
+
+def dfs(graph, start, goal):
+    """
+    DFS tìm đường đi từ start đến goal
+    graph: dict {node: [neighbors]}
+    """
+    visited = set()
+    stack = [(start, [start])]  # (node hiện tại, đường đi)
+
+    while stack:
+        current, path = stack.pop()
+
+        if current == goal:
+            return path
+
+        if current not in visited:
+            visited.add(current)
+
+            for neighbor in graph[current]:
+                if neighbor not in visited:
+                    stack.append((neighbor, path + [neighbor]))
+
+    return None
 
 # ==================== ĐỒ THỊ MẪU ====================
 
@@ -53,7 +77,7 @@ if __name__ == "__main__":
     print("  OPTIMAL PATH FINDING: BFS")
     print("=" * 50)
     print()
-
+    
     # In đồ thị
     print("Đồ thị:")
     for node in sorted(graph):
@@ -78,6 +102,31 @@ if __name__ == "__main__":
     pairs = [('A', 'G'), ('C', 'H'), ('D', 'G'), ('A', 'F')]
     for s, g in pairs:
         path = bfs(graph, s, g)
+        if path:
+            print(f"  {s} → {g}: {' → '.join(path)} ({len(path)-1} bước)")
+        else:
+            print(f"  {s} → {g}: Không tìm thấy")
+    print()
+    print("=" * 50)
+    print("  OPTIMAL PATH FINDING: DFS")
+    print("=" * 50)
+    print()
+    #DFS
+    path = dfs(graph, start, goal)
+
+    print(f"Tìm đường từ {start} → {goal} bằng DFS:")
+
+    if path:
+        print(f"  Đường đi: {' → '.join(path)}")
+        print(f"  Số bước: {len(path)-1}")
+    else:
+        print("  Không tìm thấy đường đi!")
+    # DFS thử thêm các cặp đỉnh khác
+    print()
+    print("DFS với các cặp đỉnh khác:")
+
+    for s, g in pairs:
+        path = dfs(graph, s, g)
         if path:
             print(f"  {s} → {g}: {' → '.join(path)} ({len(path)-1} bước)")
         else:

@@ -75,6 +75,31 @@ class NaiveBayesSpam:
                 self.vocab.add(token)
                 self.total_words[label] += 1
 
+# ---------- HIỂN THỊ MÔ HÌNH SAU HUẤN LUYỆN ----------
+
+    def hien_thi_mo_hinh(self):
+        """In xác suất prior và một số xác suất từ vựng"""
+
+        total_docs = sum(self.class_counts.values())
+
+        print("XÁC SUẤT PRIOR P(class):")
+        for label in self.class_counts:
+            prob = self.class_counts[label] / total_docs
+            print(f"  P({label}) = {prob:.4f}")
+
+        print()
+        print("MỘT SỐ XÁC SUẤT P(word | class):")
+
+        vocab_sample = list(self.vocab)[:10]  # lấy 10 từ ví dụ
+        vocab_size = len(self.vocab)
+
+        for word in vocab_sample:
+            print(f"\n  Từ: '{word}'")
+            for label in self.class_counts:
+                count = self.word_counts[label].get(word, 0)
+                prob = (count + 1) / (self.total_words[label] + vocab_size)
+                print(f"    P({word}|{label}) = {prob:.4f}")
+
     def du_doan(self, text):
         """Dự đoán nhãn cho một email"""
         tokens = tien_xu_ly(text)
@@ -222,6 +247,11 @@ if __name__ == "__main__":
     # --- Huấn luyện ---
     model = NaiveBayesSpam()
     model.huan_luyen(train_data)
+
+    print()
+    print(" MÔ HÌNH SAU HUẤN LUYỆN:")
+    print("-" * 50)
+    model.hien_thi_mo_hinh()
 
     print(f"📚 HUẤN LUYỆN:")
     print(f"-" * 50)

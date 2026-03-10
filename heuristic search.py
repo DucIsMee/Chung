@@ -82,7 +82,7 @@ class CSP:
         if len(assignment) == len(self.variables):
             return assignment
 
-        var = self._select_unassigned_var(assignment)
+        var = self.select_variable_mrv(assignment)
 
         for value in self.domains[var]:
             if self.is_consistent(var, value, assignment):
@@ -111,11 +111,23 @@ class CSP:
 
         return None
 
-    def _select_unassigned_var(self, assignment):
-        """MRV: chọn biến có ít giá trị hợp lệ nhất"""
+    def select_variable_mrv(self, assignment):
+        """
+        Heuristic MRV: chọn biến chưa gán có miền giá trị nhỏ nhất
+        """
         unassigned = [v for v in self.variables if v not in assignment]
-        return min(unassigned, key=lambda v: len(self.domains[v]))
 
+        best_var = None
+        min_domain = float('inf')
+
+        for var in unassigned:
+            domain_size = len(self.domains[var])
+
+            if domain_size < min_domain:
+                min_domain = domain_size
+                best_var = var
+
+        return best_var
 
 # ==================== BÀI TOÁN SUDOKU ====================
 

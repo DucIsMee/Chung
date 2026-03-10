@@ -121,6 +121,23 @@ class CryptarithmeticFOL:
         num_r = self.word_to_number(self.result, assignment)
         return num1 + num2 == num_r
 
+    # ---------- KIỂM TRA RÀNG BUỘC MỘT PHẦN ----------
+
+    def kiem_tra_rang_buoc_mot_phan(self, assignment):
+        """Kiểm tra ràng buộc khi phép gán chưa đầy đủ"""
+
+        # chữ đầu không được bằng 0
+        for ch in self.leading_chars:
+            if ch in assignment and assignment[ch] == 0:
+                return False
+
+        # các giá trị phải khác nhau
+        values = list(assignment.values())
+        if len(values) != len(set(values)):
+            return False
+
+        return True
+
     # ---------- KIỂM TRA TẤT CẢ RÀNG BUỘC ----------
 
     def kiem_tra_tat_ca_rang_buoc(self, assignment):
@@ -129,6 +146,44 @@ class CryptarithmeticFOL:
                 self.rang_buoc_khac_nhau(assignment) and
                 self.rang_buoc_khong_bat_dau_bang_0(assignment) and
                 self.rang_buoc_so_hoc(assignment))
+    
+    # ---------- SUY LUẬN TÌM NGHIỆM ----------
+
+    def suy_luan_tim_nghiem(self):
+
+        variables = self.variables
+        digits = list(range(10))
+
+        def backtrack(assignment):
+
+            # nếu gán hết biến
+            if len(assignment) == len(variables):
+
+                if self.kiem_tra_tat_ca_rang_buoc(assignment):
+                    return assignment
+                return None
+
+            # chọn biến chưa gán
+            unassigned = [v for v in variables if v not in assignment]
+            var = unassigned[0]
+
+            for digit in digits:
+
+                new_assignment = assignment.copy()
+                new_assignment[var] = digit
+
+                # kiểm tra ràng buộc tạm
+                if not self.kiem_tra_rang_buoc_mot_phan(new_assignment):
+                    continue
+
+                result = backtrack(new_assignment)
+
+                if result is not None:
+                    return result
+
+            return None
+
+        return backtrack({})
 
 
 # ==================== CHẠY CHƯƠNG TRÌNH ====================
@@ -161,3 +216,21 @@ if __name__ == "__main__":
     print(f"  Chữ đầu ≠ 0:              {puzzle.rang_buoc_khong_bat_dau_bang_0(test_assignment)}")
     print(f"  SEND + MORE = MONEY:       {puzzle.rang_buoc_so_hoc(test_assignment)}")
     print(f"  → Thỏa mãn tất cả:        {puzzle.kiem_tra_tat_ca_rang_buoc(test_assignment)}")
+
+    solution = puzzle.suy_luan_tim_nghiem()
+
+    if solution:
+        print("Tìm thấy nghiệm:", solution)
+
+        send = puzzle.word_to_number("SEND", solution)
+        more = puzzle.word_to_number("MORE", solution)
+        money = puzzle.word_to_number("MONEY", solution)
+
+        print()
+        print(f"SEND  = {send}")
+        print(f"MORE  = {more}")
+        print(f"MONEY = {money}")
+        print(f"{send} + {more} = {money}")
+
+    else:
+        print("Không tìm thấy nghiệm")

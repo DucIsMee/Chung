@@ -18,6 +18,9 @@ class FamilyKnowledgeBase:
         # Sự kiện cơ bản: cha(X, Y) và mẹ(X, Y)
         self.cha = []   # danh sách (cha, con)
         self.me = []     # danh sách (mẹ, con)
+        self.ong = []       # danh sách (ông, cháu)
+        self.ba = []        # danh sách (bà, cháu)
+        self.anh_chi_em = []  # danh sách (người1, người2)
 
     # ---------- THÊM SỰ KIỆN ----------
 
@@ -32,7 +35,21 @@ class FamilyKnowledgeBase:
         fact = (me, con)
         if fact not in self.me:
             self.me.append(fact)
-
+    def them_ong(self, ong, chau):
+        """Thêm sự kiện: ông là ông của cháu"""
+        fact = (ong, chau)
+        if fact not in self.ong:
+            self.ong.append(fact)
+    def them_ba(self, ba, chau):
+        """Thêm sự kiện: bà là bà của cháu"""
+        fact = (ba, chau)
+        if fact not in self.ba:
+            self.ba.append(fact)
+    def them_anh_chi_em(self, a, b):
+        """Thêm sự kiện: a và b là anh chị em"""
+        fact = (a, b)
+        if fact not in self.anh_chi_em:
+            self.anh_chi_em.append(fact)
     # ---------- LUẬT SUY DIỄN: CHA MẸ -> CON ----------
 
     def la_cha(self, nguoi_a, nguoi_b):
@@ -56,7 +73,15 @@ class FamilyKnowledgeBase:
         A là con của B nếu B là cha/mẹ của A
         """
         return self.la_cha_me(nguoi_b, nguoi_a)
-
+    def la_ong(self, nguoi_a, nguoi_b):
+        """Kiểm tra: A có phải là ông của B không"""
+        return (nguoi_a, nguoi_b) in self.ong
+    def la_ba(self, nguoi_a, nguoi_b):
+        """Kiểm tra: A có phải là bà của B không"""
+        return (nguoi_a, nguoi_b) in self.ba
+    def la_anh_chi_em(self, nguoi_a, nguoi_b):
+        """Kiểm tra hai người có phải anh chị em không"""
+        return (nguoi_a, nguoi_b) in self.anh_chi_em or (nguoi_b, nguoi_a) in self.anh_chi_em
     # ---------- TRUY VẤN ----------
 
     def tim_con(self, nguoi):
@@ -80,7 +105,30 @@ class FamilyKnowledgeBase:
             if con == nguoi:
                 ds_cha_me.append(("mẹ", me))
         return ds_cha_me
+    def tim_chau(self, nguoi):
+        """Tìm tất cả cháu của một người"""
+        ds_chau = set()
 
+        for ong, chau in self.ong:
+            if ong == nguoi:
+                ds_chau.add(chau)
+
+        for ba, chau in self.ba:
+            if ba == nguoi:
+                ds_chau.add(chau)
+
+        return list(ds_chau)
+    def tim_anh_chi_em(self, nguoi):
+        """Tìm tất cả anh chị em của một người"""
+        ds = set()
+
+        for a, b in self.anh_chi_em:
+            if a == nguoi:
+                ds.add(b)
+            elif b == nguoi:
+                ds.add(a)
+
+        return list(ds)
     # ---------- IN CÂY GIA PHẢ ----------
 
     def in_tat_ca_su_kien(self):
@@ -135,6 +183,14 @@ if __name__ == "__main__":
     kb.them_me("Hoa", "Cường")
     kb.them_me("Hoa", "Duyên")
 
+    kb.them_ong("Ông Hùng", "An")
+    kb.them_ong("Ông Hùng", "Bình")
+
+    kb.them_ba("Bà Lan", "An")
+    kb.them_ba("Bà Lan", "Bình")
+
+    kb.them_anh_chi_em("An", "Bình")
+    kb.them_anh_chi_em("Cường", "Duyên")
     # --- In sự kiện ---
     print("📋 CƠ SỞ TRI THỨC:")
     print("-" * 40)
@@ -181,3 +237,30 @@ if __name__ == "__main__":
     for nguoi in ["Minh", "An", "Cường"]:
         ds_cha_me = kb.tim_cha_me(nguoi)
         print(f"  Cha mẹ của {nguoi}: {ds_cha_me}")
+    #tìm ông bà
+    queries_ong_ba = [
+        ("Ông Hùng", "An"),
+        ("Ông Hùng", "Bình"),
+        ("Bà Lan", "An"),
+        ("Bà Lan", "Bình")
+    ]
+
+    for a, b in queries_ong_ba:
+        is_ong = kb.la_ong(a, b)
+        is_ba = kb.la_ba(a, b)
+
+        print(f"  {a} → {b}:")
+        print(f"    ông({a}, {b}) = {is_ong}")
+        print(f"    bà({a}, {b})  = {is_ba}")
+        print()
+    #tìm anh chị em
+        queries_ace = [
+            ("An", "Bình"),
+            ("Cường", "Duyên"),
+            ("An", "Cường")
+        ]
+
+        for a, b in queries_ace:
+            is_ace = kb.la_anh_chi_em(a, b)
+
+            print(f"  anh_chi_em({a}, {b}) = {is_ace}")

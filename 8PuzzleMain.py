@@ -32,37 +32,27 @@ def bfs(start, goal):
                     queue.put((new_state, path + [new_state]))
     return None
 
-def dfs(start, goal, max_depth=50):
-    stack = [(start, [start], 0)]   
+def dfs(start, goal, max_depth = 50):
+    stack = [(start, [start], 0)]
     visited = set()
-
     while stack:
         state, path, depth = stack.pop()
-
         if state == goal:
             return path
-
         if depth >= max_depth:
             continue
-
         flat = tuple(np.array(state).reshape(-1))
         if flat in visited:
             continue
         visited.add(flat)
-
         x, y = [(i, j) for i in range(3) for j in range(3) if state[i][j] == 0][0]
-
         moves = [(-1,0),(1,0),(0,-1),(0,1)]
-
         for dx, dy in moves:
             nx, ny = x + dx, y + dy
-
             if 0 <= nx < 3 and 0 <= ny < 3:
                 new_state = [row[:] for row in state]
                 new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
-
                 stack.append((new_state, path + [new_state], depth + 1))
-
     return None
 
 def manhattan(state):
@@ -74,6 +64,7 @@ def manhattan(state):
                 goal_x, goal_y = (val - 1) // 3, (val - 1) % 3
                 distance += abs(i - goal_x) + abs(j - goal_y)
     return distance
+
 
 def neighbors(state):
     x, y = [(i, j) for i in range(3) for j in range(3) if state[i][j] == 0][0]
@@ -111,7 +102,7 @@ def Greedy(start, goal):
         for neighbor in neighbors(state):
             if str(neighbor) not in visited:
                 heapq.heappush(heap, (manhattan(neighbor), neighbor, path + [state]))
-    return [] 
+    return []
 
 #==================================Vẽ giao diện==================================
 

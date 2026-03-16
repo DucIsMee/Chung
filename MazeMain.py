@@ -79,7 +79,7 @@ def astar(graph, start, goal):
     return None, visited_order
 
 def create_maze(rows, cols):
-    maze = [[1 for _ in range(cols+2)] for _ in range(rows+2)]
+    maze = [[1 for _ in range(cols + 2)] for _ in range(rows + 2)]
     stack = [(1,1)]
     maze[1][1] = 0
     while stack:
@@ -87,9 +87,9 @@ def create_maze(rows, cols):
         directions = [(0,2),(2,0),(0,-2),(-2,0)]
         random.shuffle(directions)
         carved = False
-        for dx,dy in directions:
-            nx,ny = x+dx,y+dy
-            if 1 <= nx < rows+1 and 1 <= ny < cols+1 and maze[nx][ny]==1:
+        for dx, dy in directions:
+            nx, ny = x + dx,y + dy
+            if 1 <= nx < rows + 1 and 1 <= ny < cols + 1 and maze[nx][ny] == 1:
                 maze[x+dx//2][y+dy//2] = 0
                 maze[nx][ny] = 0
                 stack.append((nx,ny))
@@ -108,12 +108,12 @@ def maze_to_graph(maze):
     for i in range(rows):
         for j in range(cols):
             if maze[i][j] in (0,'S','G'):
-                if maze[i][j]=='S': start=(i,j)
-                if maze[i][j]=='G': goal=(i,j)
-                neighbors=[]
+                if maze[i][j] == 'S': start = (i,j)
+                if maze[i][j] == 'G': goal = (i,j)
+                neighbors = []
                 for dx,dy in [(1,0),(-1,0),(0,1),(0,-1)]:
-                    ni,nj=i+dx,j+dy
-                    if 0<=ni<rows and 0<=nj<cols and maze[ni][nj] in (0,'S','G'):
+                    ni,nj = i + dx,j + dy
+                    if 0 <= ni < rows and 0<=nj<cols and maze[ni][nj] in (0,'S','G'):
                         neighbors.append((ni,nj))
                 graph[(i,j)] = neighbors
     return graph,start,goal
@@ -194,7 +194,7 @@ def main():
         screen.blit(astar_btn, buttons["astar"])
 
         pygame.display.flip()
-        clock.tick(30)
+        clock.tick(100)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

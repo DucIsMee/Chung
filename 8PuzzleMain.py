@@ -1,3 +1,4 @@
+import random
 import sys
 import time
 import numpy as np 
@@ -106,6 +107,17 @@ def Greedy(start, goal):
 
 #==================================Vẽ giao diện==================================
 
+def shuffle_board(state, moves=30):
+    board = [row[:] for row in state]
+    for _ in range(moves):
+        x, y = [(i, j) for i in range(3) for j in range(3) if board[i][j] == 0][0]
+        possible_moves = [(-1,0),(1,0),(0,-1),(0,1)]
+        dx, dy = random.choice(possible_moves)
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            board[x][y], board[nx][ny] = board[nx][ny], board[x][y]
+    return board
+
 def draw_state(screen, font, state):
     screen.fill((240,240,240))
     for i in range(3):
@@ -122,9 +134,9 @@ def draw_state(screen, font, state):
     pygame.display.flip()
 
 def draw_buttons(screen, font):
-    button_width = WIDTH // 4
-    labels = ["BFS","DFS","A*","Greedy"]
-    colors = [(0,200,0),(200,100,0),(200,0,0),(0,0,200)]
+    button_width = WIDTH // 5
+    labels = ["BFS","DFS","A*","Greedy", "Shuffle"]
+    colors = [(0,200,0),(200,100,0),(200,0,0),(0,0,200),(128,0,128)]
     for i,label in enumerate(labels):
         rect = pygame.Rect(i*button_width,550,button_width,BUTTON_HEIGHT)
         pygame.draw.rect(screen,colors[i],rect,border_radius=8)
@@ -148,7 +160,7 @@ def main():
     pygame.display.set_caption("8 Puzzle Solver")
     font = pygame.font.SysFont("Arial", FONT_SIZE, bold=True)
 
-    start_state = [[7,2,4],[5,0,6],[8,3,1]]
+    start_state = shuffle_board(GOAL_STATE, moves=50)
     current_state = start_state
     solution = []
     running = True
@@ -163,7 +175,7 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x,y = event.pos
                 if 550 <= y <= 600:
-                    button_width = WIDTH // 4
+                    button_width = WIDTH // 5
                     if x < button_width:          # BFS
                         solution = bfs(start_state, GOAL_STATE)
                         run_solution(screen,font,solution)
@@ -173,9 +185,14 @@ def main():
                     elif x < 3*button_width:      # A*
                         solution = astar(start_state)
                         run_solution(screen,font,solution)
-                    else:     # Greedy
+                    elif x < 4*button_width:      # Greedy
                         solution = Greedy(start_state, GOAL_STATE)
                         run_solution(screen,font,solution)
+                    else:                         # Shuffle
+                        current_state = shuffle_board(GOAL_STATE, moves=50)
+                        draw_state(screen,font,current_state)
+                        draw_buttons(screen,font)
+
 
     pygame.quit()
     sys.exit()

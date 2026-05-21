@@ -31,7 +31,9 @@ def bfs(graph, start, goal):
 def dfs(graph, start, goal):
     visited = set()
     stack = [(start, [start])]
+    visited.add(start) 
     visited_order = []
+    
     while stack:
         state, path = stack.pop()
         visited_order.append(state)
@@ -39,11 +41,9 @@ def dfs(graph, start, goal):
         if state == goal:
             return path, visited_order
 
-        if state not in visited:
-            visited.add(state)
-
         for neighbor in graph[state]:
             if neighbor not in visited:
+                visited.add(neighbor) 
                 stack.append((neighbor, path + [neighbor]))
 
     return None, visited_order
